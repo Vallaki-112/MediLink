@@ -1,14 +1,42 @@
 package com.myspringbootproject.Hospital_Management_System;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class Patient {
 
+    @Min(
+            value = 1,
+            message = "Patient ID must be greater than 0")
     private int patientId;
+
+    @NotBlank(
+            message = "Patient name cannot be empty")
     private String patientName;
+
+    @Min(
+            value = 1,
+            message = "Number of days must be greater than 0")
     private int noOfDays;
+
+    @Min(
+            value = 1,
+            message = "Bed number must be greater than 0")
     private int bedNo;
+
+    @Min(
+            value = 1,
+            message = "Room number must be greater than 0")
     private int roomNo;
+
+    @Min(
+            value = 1,
+            message = "Floor number must be greater than 0")
     private int floorNo;
 
+    // existing constructors
+    // getters
+    // setters
     public Patient() {
     }
 
