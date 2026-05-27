@@ -1,0 +1,10 @@
+# Ignore target compilation directories for all sub-modules
+**/target/
+*.jar
+*.war
+
+# Ignore IDE specific caches
+.idea/
+.vscode/
+*.iml
+bin/
