@@ -1,1 +1,6 @@
+com\hms\patientservice\controller\PatientController.class
+com\hms\patientservice\service\PatientService.class
+com\hms\patientservice\model\Patient.class
+com\hms\patientservice\service\PatientService$1.class
 com\hms\patientservice\PatientServiceApplication.class
+com\hms\patientservice\exception\PatientNotFoundException.class

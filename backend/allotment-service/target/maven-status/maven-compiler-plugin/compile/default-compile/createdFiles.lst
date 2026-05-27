@@ -1,1 +1,5 @@
+com\hms\allotmentservice\model\AllotBed.class
+com\hms\allotmentservice\service\AllotmentService$1.class
 com\hms\allotmentservice\AllotmentServiceApplication.class
+com\hms\allotmentservice\controller\AllotmentController.class
+com\hms\allotmentservice\service\AllotmentService.class

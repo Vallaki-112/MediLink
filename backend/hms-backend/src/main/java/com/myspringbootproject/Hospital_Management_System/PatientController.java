@@ -1,4 +1,4 @@
-package com.myspringbootproject.Hospital_Management_System;
+package com.hms.patientservice.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
