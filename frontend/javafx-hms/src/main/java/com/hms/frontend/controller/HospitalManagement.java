@@ -1,5 +1,7 @@
-package Hospital_Management;
+package com.hms.frontend.controller;
 import java.util.*;
+
+import com.hms.frontend.model.AllotBed;
 // ======================================================
 // CLASS: HospitalManagement
 // Uses ArrayList

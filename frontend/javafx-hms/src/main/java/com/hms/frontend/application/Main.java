@@ -1,4 +1,4 @@
-package Hospital_Management;
+package com.hms.frontend.application;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

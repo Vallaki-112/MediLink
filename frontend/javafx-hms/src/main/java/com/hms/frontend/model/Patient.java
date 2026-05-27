@@ -1,4 +1,4 @@
-package Hospital_Management;
+package com.hms.frontend.model;
 // ======================================================
 // ABSTRACT CLASS: Patient
 // Demonstrates Abstraction

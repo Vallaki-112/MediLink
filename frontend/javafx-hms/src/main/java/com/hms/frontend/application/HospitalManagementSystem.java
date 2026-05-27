@@ -1,4 +1,7 @@
-package Hospital_Management;
+package com.hms.frontend.application;
+
+import com.hms.frontend.controller.HospitalManagement;
+import com.hms.frontend.model.AllotBed;
 
 // ======================================================
 // MAIN CLASS (No User Input)
