@@ -3,7 +3,7 @@ package com.hms.frontend.controller;
 //==================================================================
 // Declarations and Imports
 //==================================================================
-import com.hms.frontend.model.AllotBed; 
+import com.hms.frontend.model.AllotBed;
 import com.hms.frontend.util.APIClient;
 
 import javafx.collections.FXCollections;
@@ -27,22 +27,37 @@ public class HospitalController {
         // FXML CONTROLS (Connected from hospital.fxml)
         // ======================================================
 
-        @FXML private TextField txtPatientId;
-        @FXML private TextField txtPatientName;
-        @FXML private TextField txtNoOfDays;
-        @FXML private TextField txtBedNo;
-        @FXML private TextField txtRoomNo;
-        @FXML private TextField txtFloorNo;
-        @FXML private TextField txtSearchId;
+        @FXML
+        private TextField txtPatientId;
+        @FXML
+        private TextField txtPatientName;
+        @FXML
+        private TextField txtNoOfDays;
+        @FXML
+        private TextField txtBedNo;
+        @FXML
+        private TextField txtRoomNo;
+        @FXML
+        private TextField txtFloorNo;
+        @FXML
+        private TextField txtSearchId;
 
-        @FXML private TableView<AllotBed> tablePatients;
-        @FXML private TableColumn<AllotBed, Integer> colPatientId;
-        @FXML private TableColumn<AllotBed, String> colPatientName;
-        @FXML private TableColumn<AllotBed, Integer> colNoOfDays;
-        @FXML private TableColumn<AllotBed, Integer> colBedNo;
-        @FXML private TableColumn<AllotBed, Integer> colRoomNo;
-        @FXML private TableColumn<AllotBed, Integer> colFloorNo;
-        @FXML private TableColumn<AllotBed, Double> colFee;
+        @FXML
+        private TableView<AllotBed> tablePatients;
+        @FXML
+        private TableColumn<AllotBed, Integer> colPatientId;
+        @FXML
+        private TableColumn<AllotBed, String> colPatientName;
+        @FXML
+        private TableColumn<AllotBed, Integer> colNoOfDays;
+        @FXML
+        private TableColumn<AllotBed, Integer> colBedNo;
+        @FXML
+        private TableColumn<AllotBed, Integer> colRoomNo;
+        @FXML
+        private TableColumn<AllotBed, Integer> colFloorNo;
+        @FXML
+        private TableColumn<AllotBed, Double> colFee;
 
         // ======================================================
         // BACKEND & UTILITY OBJECTS
@@ -72,16 +87,31 @@ public class HospitalController {
         }
 
         // ======================================================
-        // METHOD: GET /patients
+        // METHOD: GET /api/patients
         // ======================================================
         private void loadPatientsFromDatabase() {
                 try {
-                        String json = APIClient.get("/patients");
+                        // Added the missing /api prefix to match the controller
+                        String json = APIClient.get("/api/patients");
 
                         if (json != null && !json.isEmpty()) {
-                                List<AllotBed> patients = mapper.readValue(json, new TypeReference<List<AllotBed>>() {});
-                                observablePatients.setAll(patients);
-                                tablePatients.refresh();
+                                String trimmedJson = json.trim();
+
+                                if (trimmedJson.startsWith("{")) {
+                                        System.out.println("Backend Response Object: " + trimmedJson);
+                                        showAlert(Alert.AlertType.WARNING, "Server Wake-up",
+                                                        "The cloud service is waking up or returned an error response. Please wait 1 minute and click refresh.\n\nDetails: "
+                                                                        + trimmedJson);
+                                        return;
+                                }
+
+                                if (trimmedJson.startsWith("[")) {
+                                        List<AllotBed> patients = mapper.readValue(trimmedJson,
+                                                        new TypeReference<List<AllotBed>>() {
+                                                        });
+                                        observablePatients.setAll(patients);
+                                        tablePatients.refresh();
+                                }
                         }
                 } catch (Exception e) {
                         e.printStackTrace();
@@ -90,15 +120,14 @@ public class HospitalController {
         }
 
         // ======================================================
-        // METHOD: POST /patients (ADD BUTTON)
+        // METHOD: POST /api/patients (ADD BUTTON)
         // ======================================================
         @FXML
         private void addPatient() {
                 try {
-                        // Input Parsing
                         int patientId = Integer.parseInt(txtPatientId.getText());
                         String patientName = txtPatientName.getText();
-                        
+
                         if (patientName.trim().isEmpty()) {
                                 showAlert(Alert.AlertType.ERROR, "Invalid Input", "Patient name cannot be empty.");
                                 return;
@@ -114,23 +143,19 @@ public class HospitalController {
                                 return;
                         }
 
-                        // Create model payload
                         AllotBed patient = new AllotBed(patientId, patientName, noOfDays, bedNo, roomNo, floorNo);
-
-                        // Convert object to a JSON payload string
                         String jsonRequestBody = mapper.writeValueAsString(patient);
 
-                        // Send HTTP POST to the backend API
-                        String response = APIClient.post("/patients", jsonRequestBody);
+                        // Added the missing /api prefix
+                        String response = APIClient.post("/api/patients", jsonRequestBody);
 
-                        // If backend throws an exception/error, our GlobalExceptionHandler catches it, 
-                        // so we check if the response indicates failure or handle it gracefully.
                         if (response != null && !response.contains("error")) {
                                 showAlert(Alert.AlertType.INFORMATION, "Success", "Patient added successfully.");
-                                loadPatientsFromDatabase(); // Refresh UI list straight from DB state
+                                loadPatientsFromDatabase();
                                 clearFields();
                         } else {
-                                showAlert(Alert.AlertType.ERROR, "API Validation Failure", "Backend rejected request:\n" + response);
+                                showAlert(Alert.AlertType.ERROR, "API Validation Failure",
+                                                "Backend rejected request:\n" + response);
                         }
 
                 } catch (NumberFormatException e) {
@@ -141,7 +166,7 @@ public class HospitalController {
         }
 
         // ======================================================
-        // METHOD: PUT /patients/{id} (UPDATE BUTTON)
+        // METHOD: PUT /api/patients/{id} (UPDATE BUTTON)
         // ======================================================
         @FXML
         private void updatePatient() {
@@ -159,11 +184,12 @@ public class HospitalController {
                         int roomNo = Integer.parseInt(txtRoomNo.getText());
                         int floorNo = Integer.parseInt(txtFloorNo.getText());
 
-                        AllotBed updatedPatient = new AllotBed(patientId, patientName, noOfDays, bedNo, roomNo, floorNo);
+                        AllotBed updatedPatient = new AllotBed(patientId, patientName, noOfDays, bedNo, roomNo,
+                                        floorNo);
                         String jsonRequestBody = mapper.writeValueAsString(updatedPatient);
 
-                        // Send HTTP PUT request to modify the resource
-                        String response = APIClient.put("/patients/" + patientId, jsonRequestBody);
+                        // Added the missing /api prefix
+                        String response = APIClient.put("/api/patients/" + patientId, jsonRequestBody);
 
                         if (response != null && !response.contains("error")) {
                                 showAlert(Alert.AlertType.INFORMATION, "Success", "Patient updated successfully.");
@@ -181,22 +207,23 @@ public class HospitalController {
         }
 
         // ======================================================
-        // METHOD: DELETE /patients/{id} (REMOVE PATIENT BUTTON)
+        // METHOD: DELETE /api/patients/{id} (REMOVE PATIENT BUTTON)
         // ======================================================
         @FXML
         private void removePatient() {
                 try {
                         int patientId = Integer.parseInt(txtSearchId.getText());
 
-                        // Send HTTP DELETE command to the specific resource URL
-                        String response = APIClient.delete("/patients/" + patientId);
+                        // Added the missing /api prefix
+                        String response = APIClient.delete("/api/api/patients/" + patientId);
 
                         if (response != null && !response.contains("error")) {
                                 showAlert(Alert.AlertType.INFORMATION, "Success", "Patient deleted successfully.");
                                 loadPatientsFromDatabase();
                                 txtSearchId.clear();
                         } else {
-                                showAlert(Alert.AlertType.ERROR, "Deletion Error", "Target patient not found or active.");
+                                showAlert(Alert.AlertType.ERROR, "Deletion Error",
+                                                "Target patient not found or active.");
                         }
 
                 } catch (NumberFormatException e) {
@@ -244,7 +271,8 @@ public class HospitalController {
                                 if (patient.getPatientId() == patientId) {
                                         tablePatients.getSelectionModel().select(patient);
                                         tablePatients.scrollTo(patient);
-                                        showAlert(Alert.AlertType.INFORMATION, "Patient Found", "Patient: " + patient.getPatientName());
+                                        showAlert(Alert.AlertType.INFORMATION, "Patient Found",
+                                                        "Patient: " + patient.getPatientName());
                                         return;
                                 }
                         }
